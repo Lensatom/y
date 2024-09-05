@@ -12,6 +12,9 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+      borderWidth: {
+        "0.5": "0.5px"
+      },
   		colors: {
   			background: 'var(--background)',
   			foreground: 'var(--foreground)',
