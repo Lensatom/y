@@ -116,7 +116,7 @@ const Posts = () => {
         </div>
         <Text size="sm" variant="secondary" className="ml-12 flex gap-1">
           Replying to
-          {replyingTo.map((handle, index) => <Text variant="link" key={index} className="text-primary">{handle}</Text>)}
+          {replyingTo.map((handle, index) => <Text key={index} className="text-primary">{handle}</Text>)}
         </Text>
         <div className=" w-full flex gap-3">
           <Avatar>
