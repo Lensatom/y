@@ -9,7 +9,7 @@ const Sidebar = () => {
   const navs = [
     {
       icon: AiFillHome,
-      route: "/",
+      route: "/home",
     },
     {
       icon: AiOutlineSearch,
@@ -31,11 +31,7 @@ const Sidebar = () => {
         <NavLink to={nav.route}>
           <nav.icon
             size={iconSize}
-            color={
-              nav.route !== "/" && pathname.includes(nav.route) ? "#1DA1F2" :
-              pathname === nav.route && nav.route === "/" ? "#1DA1F2" :
-              "#ffffff"
-            }
+            color={pathname === nav.route ? "#1DA1F2" : "#ffffff"}
           />
         </NavLink>
       ))}

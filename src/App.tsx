@@ -1,18 +1,26 @@
-import { Route, Routes, useLocation } from "react-router-dom"
-import { Home } from "./pages/home"
-import { Sidebar } from "./components/inc"
-import { Trending } from "./pages/trending"
-import { Messages } from "./pages/messages"
-import { Profile } from "./pages/profile"
+import { onAuthStateChanged } from "firebase/auth"
+import { useEffect, useState } from "react"
 import { FaSearch } from "react-icons/fa"
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { Input, Text } from "./components/base"
-import { Trend } from "./pages/trending/components"
-import { Posts } from "./pages/posts"
+import { Loader, Sidebar } from "./components/inc"
+import { IUserData } from "./interfaces"
 import { Welcome } from "./pages/auth"
+import { Home } from "./pages/home"
+import { Messages } from "./pages/messages"
+import { Posts } from "./pages/posts"
+import { Profile } from "./pages/profile"
+import { Trending } from "./pages/trending"
+import { Trend } from "./pages/trending/components"
+import { auth } from "./services/firebase"
+import { getData } from "./services/firebase/firestore"
 
 function App() {
 
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
+  const [userData, setUserData] = useState<IUserData | null>(null)
 
   const trends = [
     {
@@ -24,6 +32,23 @@ function App() {
       postCount: 500
     },
   ]
+
+  useEffect(() => {
+    if (userData) {
+      navigate("/home")
+    } else {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const uid = user.uid;
+          const userData:any = await getData("users", uid)
+          setUserData(userData)
+        }
+        setIsLoading(false)
+      });
+    }
+  }, [userData])
+
+  if (isLoading) return <Loader />
 
   return (
     <div className="relative px-24 flex flex-row">
