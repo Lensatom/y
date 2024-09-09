@@ -1,21 +1,13 @@
 import { Button, TextArea } from "@/components/base";
 import { Avatar, AvatarFallback, AvatarImage, Container, Post, PostLengthProgress } from "@/components/inc";
 import { useState } from "react";
-import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 const Home = () => {
 
-  const maxPostLength = 280
-  const warningPostLength = 260
   const [newPost, setNewPost] = useState("")
 
   const handlePostChange = (e:any) => {
-    // const content = e.target.value
-    // if (content.length === 0) {
-    //   setNewPostContent("")
-    //   return
-    // }
     setNewPost(e.target.value)
   }
 

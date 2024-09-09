@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import { Home } from "./pages/home"
 import { Sidebar } from "./components/inc"
 import { Trending } from "./pages/trending"
@@ -8,8 +8,11 @@ import { FaSearch } from "react-icons/fa"
 import { Input, Text } from "./components/base"
 import { Trend } from "./pages/trending/components"
 import { Posts } from "./pages/posts"
+import { Welcome } from "./pages/auth"
 
 function App() {
+
+  const { pathname } = useLocation()
 
   const trends = [
     {
@@ -24,11 +27,12 @@ function App() {
 
   return (
     <div className="relative px-24 flex flex-row">
-      <Sidebar />
+      {pathname !== "/" && <Sidebar />}
       <main className="mx-16 w-full flex gap-8">
         <section className="w-3/5 border-x-0.5">
           <Routes>
-            <Route path="" element={<Home />} />
+            <Route path="" element={<Welcome />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/explore" element={<Trending />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
