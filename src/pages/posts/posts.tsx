@@ -1,27 +1,32 @@
-import { Button, TextArea } from "@/components/base";
+import { Button, Text, TextArea } from "@/components/base";
 import { Avatar, AvatarFallback, AvatarImage, Container, Post, PostLengthProgress } from "@/components/inc";
-import { useState } from "react";
-import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { useEffect, useState } from "react";
+import { BiRepost } from "react-icons/bi";
+import { BsChat, BsHeart } from "react-icons/bs";
+import { IoIosStats } from "react-icons/io";
+import { MdShare } from "react-icons/md";
+import { Link } from "react-router-dom";
 
-const Home = () => {
+const Posts = () => {
+  
+  const [newReply, setNewReply] = useState("")
+  const [replyingTo, setReplyingTo] = useState<string[]>([])
 
-  const maxPostLength = 280
-  const warningPostLength = 260
-  const [newPost, setNewPost] = useState("")
-
-  const handlePostChange = (e:any) => {
-    // const content = e.target.value
-    // if (content.length === 0) {
-    //   setNewPostContent("")
-    //   return
-    // }
-    setNewPost(e.target.value)
+  const postData = {
+    photoURL: "https://img.freepik.com/free-photo/woman-wearing-blank-shirt-medium-shot_23-2149345055.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1725494400&semt=ais_hybrid",
+    name: "Lara William",
+    handle: "@larawilly",
+    content: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia quia dolores minus laudantium eligendi repellat, fugiat neque eum id doloribus ex consequatur corporis? Libero quia, iste quisquam perspiciatis iusto ea.",
+    likeCount: 40,
+    replyCount: 20,
+    repostCount: 2,
+    viewCount: 200,
+    prev: null
   }
 
-  const posts = [
+  const replies = [
     {
-      id: "1",
+      id: "3",
       photoURL: "https://img.freepik.com/free-photo/woman-wearing-blank-shirt-medium-shot_23-2149345055.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1725494400&semt=ais_hybrid",
       name: "Lara William",
       handle: "@larawilly",
@@ -44,45 +49,98 @@ const Home = () => {
     }
   ]
 
+  useEffect(() => {
+    const replyingTo = getReplyingTo()
+    setReplyingTo(replyingTo)
+  })
+
+  const getReplyingTo = () => {
+    let replyingTo:string[] = []
+    if (postData.prev) {
+      // get other replies
+    }
+    replyingTo.push(postData.handle)
+    return replyingTo
+  }
+
+  const handleReplyChange = (e:any) => {
+    // const content = e.target.value
+    // if (content.length === 0) {
+    //   setNewPostContent("")
+    //   return
+    // }
+    setNewReply(e.target.value)
+  }
 
   return (
-    <div className="min-h-screen w-full bg-background">
-      <Container className="border-b-0.5 flex flex-col items-end pt-10">
+    <>
+      <Container className="py-4 border-b-0.5 flex flex-col items-start gap-3">
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={postData.photoURL} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <Link to="" className="flex flex-col items-start">
+            <Text variant="link" bold>{postData.name}</Text>
+            <Text size="sm" variant="secondary">{postData.handle}</Text>
+          </Link>
+        </div>
+        <Text className="text-white">{postData.content}</Text>
+        <Text size="sm" variant="secondary">
+          7:08AM &#x2022;
+          Sep 8, 2024 &#x2022;{" "}
+          <span className="text-white">
+            {postData.viewCount}
+          </span> Views
+        </Text>
+        <div className="w-full py-1 px-1 flex justify-between items-center border-y-0.5">
+          <Button variant="ghost" title="Reply" className="flex items-center gap-1 text-gray-500 hover:text-primary">
+            <BsChat size={16} />
+            <Text size="sm">{postData.replyCount}</Text>
+          </Button>
+          <Button variant="ghost" title="Repost" className="flex items-center gap-1 text-gray-500 hover:text-green-500">
+            <BiRepost size={22} />
+            <Text size="sm">{postData.repostCount}</Text>
+          </Button>
+          <Button variant="ghost" title="Like" className="flex items-center gap-1 text-gray-500 hover:text-pink-600">
+            <BsHeart size={14} />
+            <Text size="sm">{postData.likeCount}</Text>
+          </Button>
+          <Button variant="ghost" title="View" className="flex items-center gap-1 text-gray-500 hover:text-primary">
+            <IoIosStats />
+            <Text size="sm">{postData.viewCount}</Text>
+          </Button>
+          <Button variant="ghost" title="Share" className="text-gray-500 hover:text-primary">
+            <MdShare size={16} />
+          </Button>
+        </div>
+        <Text size="sm" variant="secondary" className="ml-12 flex gap-1">
+          Replying to
+          {replyingTo.map((handle, index) => <Text variant="link" key={index} className="text-primary">{handle}</Text>)}
+        </Text>
         <div className=" w-full flex gap-3">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className="w-full border-b-0.5">
-            {/* <p
-              onClick={() => textAreaRef.current.focus()}
-              className="text-xl text-gray-400"
-            >
-              {newPostContent}
-            </p> */}
+          <div className="w-full flex flex-col items-end">
             <TextArea
               variant="ghost"
-              placeholder="What's happenening?!"
+              placeholder="Post your reply"
               className="placeholder:text-xl w-full min-h-10 h-12 max-h-52 py-1 outline-none text-lg"
-              value={newPost}
-              onChange={handlePostChange}
+              value={newReply}
+              onChange={handleReplyChange}
             ></TextArea>
+            <div className="flex items-center gap-3">
+              {newReply && <PostLengthProgress postLength={newReply.length} />}
+              <Button pill disabled={!newReply}>Reply</Button>
+            </div>
           </div>
         </div>
-        <div className="py-5 flex items-center h-full gap-5">
-          {newPost && (
-            <div className="border-r-0.5 h-full px-5">
-              <PostLengthProgress postLength={newPost.length} />
-            </div>
-          )}
-          <Button disabled={!newPost} pill className="px-8">Post</Button>
-        </div>
       </Container>
-      <div>
-        {posts.map((post) => <Post {...post} />)}
-      </div>
-    </div>
+      {replies.map((post) => <Post {...post} />)}
+    </>
   )
 }
 
-export default Home
+export default Posts

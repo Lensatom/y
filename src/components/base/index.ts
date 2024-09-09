@@ -1,2 +1,3 @@
 export { Button } from "./button"
-export { Input, Textarea } from "./input"
+export { Input, TextArea } from "./input"
+export { Text } from "./text"

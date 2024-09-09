@@ -26,7 +26,7 @@ const Sidebar = () => {
   ]
 
   return (
-    <nav className="fixed h-screen w-16 flex flex-col justify-center gap-6">
+    <nav className="fixed h-screen w-16 flex flex-col justify-center gap-8">
       {navs.map((nav) => (
         <NavLink to={nav.route}>
           <nav.icon
