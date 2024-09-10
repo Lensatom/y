@@ -30,6 +30,17 @@ export const getData = async (col:string, id:string, morePath?:string[]) => {
   }
 }
 
+export const dataExists = async (col:string, id:string, morePath?:string[]) => {
+  const docRef = doc(db, col, id, ...(morePath ? morePath : []));
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return true
+  } else {
+    return false
+  }
+}
+
 export const getCollection = async (col:string, conditions:any[], morePath?:string[]) => {
   const dataCollection:any[] = []
   

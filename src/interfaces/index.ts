@@ -18,4 +18,10 @@ export interface IPost {
   repostCount: number
   viewCount: number
   replyingTo: string | null
+  createdAt?: any
+}
+
+export interface ITrend {
+  trend: string;
+  postCount: number;
 }

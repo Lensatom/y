@@ -9,7 +9,7 @@ import { Home } from "./pages/home"
 import { Messages } from "./pages/messages"
 import { Posts } from "./pages/posts"
 import { Profile } from "./pages/profile"
-import { Trending } from "./pages/trending"
+import { Search, Trending } from "./pages/trending"
 import { Trend } from "./pages/trending/components"
 import { auth } from "./services/firebase"
 import { getData } from "./services/firebase/firestore"
@@ -68,6 +68,7 @@ function App() {
             <Route path="/explore" element={<Trending />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/status">
               <Route path=":id" element={<Posts />} />
             </Route>

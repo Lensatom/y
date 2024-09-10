@@ -9,7 +9,10 @@ import Container from "./container";
 import { Link } from "react-router-dom";
 import { IPost } from "@/interfaces";
 
-interface Props extends IPost {}
+interface Props extends IPost {
+  search?: string
+  thread?: boolean
+}
 
 const Post = (props:Props) => {
 
@@ -18,27 +21,40 @@ const Post = (props:Props) => {
     photoURL,
     name,
     handle,
-    content,
+    content:c,
     likeCount,
     replyCount,
     repostCount,
-    viewCount
+    viewCount,
+    // component props
+    search,
+    thread
   } = props
+
+  const content = search ? c.split(search) : c
 
   return (
     <Link to={`/status/${id}`}>
-      <Container className="py-2 border-b-0.5 flex items-start gap-2">
-        <Avatar>
+      <Container className={`${thread ? "" : "border-b-0.5 pt-4"} relative !pl-10`}>
+        <Avatar className="absolute left-5">
           <AvatarImage src={photoURL} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div className="w-full">
+        <div className={`${thread ? "border-l-0.5" : ""} w-full pl-8`}>
           <Link to="" className="flex items-center gap-1">
             <Text variant="link" bold>{name}</Text>
             <Text size="sm" variant="secondary">{handle}</Text>
           </Link>
-          <Text className="text-white">{content}</Text>
-          <div className="w-full flex justify-between items-center">
+          {search ? (
+            <Text className="w-full gap-1">
+              {content[0]}
+              <span className="text-primary hover:underline" onClick={() => window.location.reload()}>{search}</span>
+              {content[1]}
+            </Text>
+          ) : (
+            <Text>{content}</Text>
+          )}
+          <div className="w-full flex justify-between items-center pb-2">
             <Button variant="ghost" title="Reply" className="flex items-center gap-1 text-gray-500 hover:text-primary">
               <BsChat size={16} />
               <Text size="sm">{replyCount}</Text>
@@ -62,7 +78,6 @@ const Post = (props:Props) => {
               <Button variant="ghost" title="Share" className="text-gray-500 hover:text-primary">
                 <MdShare size={16} />
               </Button>
-              {/* <Text size="sm">200</Text> */}
             </div>
           </div>
         </div>

@@ -1,8 +1,10 @@
 import { Button, TextArea } from "@/components/base";
 import { Avatar, AvatarFallback, AvatarImage, Container, PostLengthProgress } from "@/components/inc";
 import { MAXPOSTLENGTH } from "@/constants/constants";
-import { addData } from "@/services/firebase/firestore";
+import { getHashtags } from "@/helpers";
+import { addData, dataExists, updateData } from "@/services/firebase/firestore";
 import { useUserStore } from "@/store";
+import { increment } from "firebase/firestore";
 import { useState } from "react";
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -25,14 +27,41 @@ const NewPost = () => {
   }
   const [newPostContent, setNewPostContent] = useState("")
 
+  const postHashtags = async (hashtags:string[]) => {
+    if (!hashtags.length) return
+    
+    const hashtag = hashtags[0]
+    const trendExists = await dataExists("trends", hashtag)
+
+    if (trendExists) {
+      const payload = {postCount: increment(1)}
+      updateData("trends", hashtag, payload)
+    } else {
+      const payload = {
+        trend: hashtag,
+        postCount: 1
+      }
+      addData("trends", hashtag, payload)
+    }
+    
+    hashtags.shift()
+    return postHashtags(hashtags)
+  }
+
   const handleNewPost = async () => {
     setIsLoading(true)
 
+    const hashtags = getHashtags(newPostContent)
+    const hashtagMap = hashtags.reduce((acc, curr) => {return {...acc, [curr]: true}}, {})
+
     const newPostData = {
       ...defaultNewPostData,
-      content: newPostContent
+      content: newPostContent,
+      ...hashtagMap
     }
     await addData("posts", "auto", newPostData)
+    
+    await postHashtags(hashtags)
     
     setNewPostContent("")
     setIsLoading(false)
