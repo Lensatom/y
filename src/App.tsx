@@ -4,7 +4,6 @@ import { FaSearch } from "react-icons/fa"
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { Input, Text } from "./components/base"
 import { Loader, Sidebar } from "./components/inc"
-import { IUserData } from "./interfaces"
 import { Welcome } from "./pages/auth"
 import { Home } from "./pages/home"
 import { Messages } from "./pages/messages"
@@ -14,13 +13,17 @@ import { Trending } from "./pages/trending"
 import { Trend } from "./pages/trending/components"
 import { auth } from "./services/firebase"
 import { getData } from "./services/firebase/firestore"
+import { useUserStore } from "./store"
 
 function App() {
 
-  const { pathname } = useLocation()
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  
+  const { isLoggedIn, login } = useUserStore((state) => state)
   const [isLoading, setIsLoading] = useState(true)
-  const [userData, setUserData] = useState<IUserData | null>(null)
+
+  const unauthRoutes = ["/"]
 
   const trends = [
     {
@@ -34,22 +37,26 @@ function App() {
   ]
 
   useEffect(() => {
-    if (userData) {
+    if (isLoggedIn && unauthRoutes.includes(pathname)) {
       navigate("/home")
     } else {
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           const uid = user.uid;
           const userData:any = await getData("users", uid)
-          setUserData(userData)
+          login(userData)
         }
         setIsLoading(false)
       });
     }
-  }, [userData])
+  }, [isLoggedIn])
+
+  useEffect(() => {
+    if (isLoading || isLoggedIn) return
+    navigate("/")
+  }, [isLoading])
 
   if (isLoading) return <Loader />
-
   return (
     <div className="relative px-24 flex flex-row">
       {pathname !== "/" && <Sidebar />}

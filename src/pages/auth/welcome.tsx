@@ -1,8 +1,6 @@
 import { Button, Text } from '@/components/base'
 import { Container } from '@/components/inc'
-import { auth, provider } from '@/services/firebase'
 import { signInWithGoogle } from '@/services/firebase/auth'
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth'
 
 const Welcome = () => {
 
@@ -18,7 +16,7 @@ const Welcome = () => {
         <Text className='font-bold text-3xl mt-4'>Join today.</Text>
         <div className='flex flex-col w-1/2 gap-3'>
           <Button variant="light" pill onClick={handleGoogleClick}>Sign up with Google</Button>
-          <Button variant="light" pill>Sign up with Apple</Button>
+          {/** <Button variant="light" pill>Sign up with Apple</Button> **/}
         </div>
       </div>
     </Container>
