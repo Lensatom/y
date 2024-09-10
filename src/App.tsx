@@ -44,7 +44,7 @@ function App() {
         if (user) {
           const uid = user.uid;
           const userData:any = await getData("users", uid)
-          login(userData)
+          login({...userData, handle: "@lensatom"})
         }
         setIsLoading(false)
       });

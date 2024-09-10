@@ -7,18 +7,9 @@ import { Button, Text } from "../base";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import Container from "./container";
 import { Link } from "react-router-dom";
+import { IPost } from "@/interfaces";
 
-interface Props {
-  id: string,
-  photoURL: string;
-  name: string;
-  handle: string;
-  content: string;
-  likeCount: number;
-  replyCount: number;
-  repostCount: number;
-  viewCount: number;
-}
+interface Props extends IPost {}
 
 const Post = (props:Props) => {
 
@@ -36,7 +27,7 @@ const Post = (props:Props) => {
 
   return (
     <Link to={`/status/${id}`}>
-      <Container className="py-4 border-b-0.5 flex items-start gap-2">
+      <Container className="py-2 border-b-0.5 flex items-start gap-2">
         <Avatar>
           <AvatarImage src={photoURL} />
           <AvatarFallback>CN</AvatarFallback>
@@ -46,8 +37,8 @@ const Post = (props:Props) => {
             <Text variant="link" bold>{name}</Text>
             <Text size="sm" variant="secondary">{handle}</Text>
           </Link>
-          <Text size="sm" className="text-white">{content}</Text>
-          <div className="w-full pt-3 flex justify-between items-center">
+          <Text className="text-white">{content}</Text>
+          <div className="w-full flex justify-between items-center">
             <Button variant="ghost" title="Reply" className="flex items-center gap-1 text-gray-500 hover:text-primary">
               <BsChat size={16} />
               <Text size="sm">{replyCount}</Text>

@@ -1,0 +1,2 @@
+export const MAXPOSTLENGTH = 280
+export const WARNINGPOSTLENGTH = 260

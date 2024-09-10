@@ -6,6 +6,7 @@ const defaultUserState = {
   name: null,
   photoURL: null,
   email: null,
+  handle: null,
   isLoggedIn: false,
 }
 
