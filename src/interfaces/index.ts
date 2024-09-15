@@ -3,7 +3,10 @@ export interface IUserData {
   name: string | null;
   email: string | null;
   handle: string | null;
-  photoURL: string | null
+  photoURL: string | null;
+  bio: string | null;
+  coverPhotoURL: string;
+  createdAt?: any
 }
 
 export interface IPost {

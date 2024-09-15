@@ -8,6 +8,9 @@ const defaultUserState = {
   email: null,
   handle: null,
   isLoggedIn: false,
+  createdAt: null,
+  bio: null,
+  coberPhotoURL: null
 }
 
 export const useUserStore = create<UserState>((set) => ({
