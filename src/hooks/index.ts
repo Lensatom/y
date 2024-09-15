@@ -1,0 +1,69 @@
+import { dataExists, getCollection, getData } from "@/services/firebase/firestore"
+import { useEffect, useState } from "react"
+
+interface Params {
+  path: string[]
+  type?: "data" | "collection" | "exists"
+  conditions?: any[]
+}
+
+export function useFetch <T>(params:Params) {
+
+  const {
+    path,
+    type,
+    conditions,
+  } = params
+
+  const [data, setData] = useState<T>()
+  const [isLoading, setIsLoading] = useState(true)
+
+  const handleFetch = async () => {
+    let data:any
+
+    if (type === "collection") {
+      data = await getCollection(
+        path[0],
+        conditions ?? [],
+        path.length > 2 ? path.slice(2, path.length) : []
+      )
+    } else if (type === "exists") {
+      data = await dataExists(
+        path[0],
+        path[1],
+        path.length > 2 ? path.slice(2, path.length) : []
+      )
+    } else {
+      data = await getData(
+        path[0],
+        path[1],
+        path.length > 2 ? path.slice(2, path.length) : []
+      )
+    }
+
+    setData(data)
+    setIsLoading(false)
+  }
+
+  const handleRefresh = () => {
+    setIsLoading(true)
+    handleFetch()
+  }
+
+  const updateData = (data:any) => {
+    if (type === "collection" || type === "exists") {
+      throw 'cannot update collection data, try "setData"'
+    }
+
+    setData((prev) => ({
+      ...prev,
+      ...data
+    }))
+  }
+
+  useEffect(() => {
+    handleFetch()
+  }, [])
+
+  return {data, isLoading, refresh:handleRefresh, setData, updateData}
+}

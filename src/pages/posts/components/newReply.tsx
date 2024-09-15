@@ -68,7 +68,7 @@ const NewReply = (props:Props) => {
       ...hashtagMap
     }
     await addData("posts", "auto", newPostData)
-    
+    await updateData("posts", replyingTo, {replyCount: increment(1)})
     await postHashtags(hashtags)
     
     setNewReplyContent("")

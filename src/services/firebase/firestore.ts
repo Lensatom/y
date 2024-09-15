@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from ".";
 
 export const addData = async (col:string, id:string, payload:any, morePath?:string[]) => {
@@ -62,4 +62,9 @@ export const updateData = async (col:string, id:string, payload:any, morePath?:s
     ...payload,
     updatedAt: serverTimestamp()
   });
+}
+
+export const deleteData = async (col:string, id:string, morePath?:string[]) => {
+  const docRef = doc(db, col, id, ...(morePath ? morePath : []));
+  await deleteDoc(docRef)
 }
