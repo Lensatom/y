@@ -1,11 +1,11 @@
-import { getDate, getTime } from "@/helpers";
+import { getDate, getHashtags, getTime, postHashtags } from "@/helpers";
 import { useFetch } from "@/hooks";
 import { IPost } from "@/interfaces";
 import { addData, deleteData, updateData } from "@/services/firebase/firestore";
 import { useUserStore } from "@/store";
 import { increment, where } from "firebase/firestore";
 import { BiRepost } from "react-icons/bi";
-import { BsChat, BsHeart } from "react-icons/bs";
+import { BsChat, BsHeart, BsHeartFill } from "react-icons/bs";
 import { IoIosStats } from "react-icons/io";
 import { MdBookmark, MdOutlineBookmarkBorder, MdShare } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -29,6 +29,7 @@ const Post = (props:Props) => {
     content:c,
     viewCount,
     createdAt,
+    reposterName,
     // component props
     search,
     thread,
@@ -74,27 +75,37 @@ const Post = (props:Props) => {
 
   return (
     <Container className={`${thread ? "pt-1" : "border-b-0.5 pt-4"} relative !pl-0`}>
+      {reposterName && (
+        <Link to="/user/">
+          <Text size="sm" className="text-gray-400 flex items-center pb-2 gap-1 px-10 hover:underline">
+            <BiRepost size={18} /> {reposterName} reposted
+          </Text>
+        </Link>
+      )}
+      {/* TODO: Add reposter... */}
       <Avatar className="absolute left-5">
         <AvatarImage src={photoURL} />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <div>
-        <Link to="" className={`${thread ? "border-l-0.5" : ""} w-full pl-16 flex items-center gap-1 pb-1`}>
+        <Link to="" className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 flex items-center gap-1 pb-1`}>
           <Text variant="link" bold>{name}</Text>
           <Text size="sm" variant="secondary">{handle}</Text>
         </Link>
-        <Link to={`/status/${id}`} className={`${thread ? "border-l-0.5" : ""} w-full flex pl-16 pb-1`}>
-          {search ? (
-            <Text className="w-full gap-1">
-              {content[0]}
-              <span className="text-primary hover:underline" onClick={() => window.location.reload()}>{search}</span>
-              {content[1]}
-            </Text>
-          ) : (
-            <Text>{content}</Text>
-          )}
+        <Link to={`/status/${id}`} className="flex w-full pl-10">
+          <div className={`${thread ? "border-l-0.5" : ""} w-full flex pl-6 pb-1`}>
+            {search ? (
+              <Text className="w-full gap-1">
+                {content[0]}
+                <span className="text-primary hover:underline" onClick={() => window.location.reload()}>{search}</span>
+                {content[1]}
+              </Text>
+            ) : (
+              <Text>{content}</Text>
+            )}
+          </div>
         </Link>
-        <div className={`${thread ? "border-l-0.5" : ""} w-full pl-16`}>
+        <div className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 pr-10`}>
           <div className="w-full flex justify-between items-center pb-2">
             <ActionPanel {...props} />
           </div>
@@ -107,7 +118,7 @@ const Post = (props:Props) => {
 
 const ActionPanel = (props:Props) => {
 
-  const { id:userId } = useUserStore(state => state)
+  const { id:userId, name:userName } = useUserStore(state => state)
 
   const {
     id,
@@ -155,9 +166,12 @@ const ActionPanel = (props:Props) => {
       await addData("posts", "auto", {
         ...props,
         reposterId: userId,
+        reposterName: userName,
         repostRef: id
       })
       await updateData("posts", id, {repostCount: increment(1)})
+      const hashtags = getHashtags(props.content)
+      await postHashtags(hashtags)
     }
   }
 
@@ -182,7 +196,7 @@ const ActionPanel = (props:Props) => {
       <Text size="sm">{repostCount}</Text>
     </Button>
     <Button onClick={handleLike} variant="ghost" title="Like" className={`${liked ? "text-pink-600" : "text-gray-500"} flex items-center gap-1 hover:text-pink-600`}>
-      <BsHeart size={14} />
+      {liked ? <BsHeartFill size={14} /> : <BsHeart size={14} />}
       <Text size="sm">{likeCount}</Text>
     </Button>
     <Button variant="ghost" title="View" className="flex items-center gap-1 text-gray-500 hover:text-primary">

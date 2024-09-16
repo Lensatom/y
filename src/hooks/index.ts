@@ -46,6 +46,7 @@ export function useFetch <T>(params:Params) {
   }
 
   const handleRefresh = () => {
+    setData(undefined)
     setIsLoading(true)
     handleFetch()
   }

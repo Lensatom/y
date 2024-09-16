@@ -1,8 +1,8 @@
 import { Button, TextArea } from "@/components/base"
 import { Avatar, AvatarFallback, AvatarImage, PostLengthProgress } from "@/components/inc"
 import { MAXPOSTLENGTH } from "@/constants/constants"
-import { getHashtags } from "@/helpers"
-import { addData, dataExists, updateData } from "@/services/firebase/firestore"
+import { getHashtags, postHashtags } from "@/helpers"
+import { addData, updateData } from "@/services/firebase/firestore"
 import { useUserStore } from "@/store"
 import { increment } from "firebase/firestore"
 import { useState } from "react"
@@ -34,42 +34,18 @@ const NewReply = (props:Props) => {
   const [newReplyContent, setNewReplyContent] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  
-  const postHashtags = async (hashtags:string[]) => {
-    if (!hashtags.length) return
-    
-    const hashtag = hashtags[0]
-    const trendExists = await dataExists("trends", hashtag)
-
-    if (trendExists) {
-      const payload = {postCount: increment(1)}
-      updateData("trends", hashtag, payload)
-    } else {
-      const payload = {
-        trend: hashtag,
-        postCount: 1
-      }
-      addData("trends", hashtag, payload)
-    }
-    
-    hashtags.shift()
-    return postHashtags(hashtags)
-  }
-
   const handleNewReply = async () => {
     setIsLoading(true)
-
-    const hashtags = getHashtags(newReplyContent)
-    const hashtagMap = hashtags.reduce((acc, curr) => {return {...acc, [curr]: true}}, {})
-
+    
     const newPostData = {
       ...defaultNewReplyData,
-      content: newReplyContent,
-      ...hashtagMap
+      content: newReplyContent
     }
-    await addData("posts", "auto", newPostData)
+    const id = await addData("posts", "auto", newPostData)
     await updateData("posts", replyingTo, {replyCount: increment(1)})
-    await postHashtags(hashtags)
+
+    const hashtags = getHashtags(newReplyContent, )
+    await postHashtags(hashtags, id)
     
     setNewReplyContent("")
     setIsLoading(false)

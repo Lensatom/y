@@ -14,6 +14,8 @@ import { Trend } from "./pages/trending/components"
 import { auth } from "./services/firebase"
 import { getData } from "./services/firebase/firestore"
 import { useUserStore } from "./store"
+import { ITrend } from "./interfaces"
+import { useFetch } from "./hooks"
 
 function App() {
 
@@ -25,16 +27,10 @@ function App() {
 
   const unauthRoutes = ["/"]
 
-  const trends = [
-    {
-      trend: "#hello y",
-      postCount: 200
-    },
-    {
-      trend: "#weldone",
-      postCount: 500
-    },
-  ]
+  const { data:trends } = useFetch<ITrend[]>({
+    path: ["trends"],
+    type: "collection"
+  })
 
   useEffect(() => {
     if (isLoggedIn && unauthRoutes.includes(pathname)) {
@@ -82,7 +78,7 @@ function App() {
           <div className="px-6 py-4 border-0.5 rounded-lg">
             <Text size="xl" bold>Trends for you</Text>
             <div className="flex flex-col gap-3 mt-4">
-              {trends.map((trend) => <Trend {...trend} />)}
+              {trends?.map((trend) => <Trend {...trend} />)}
             </div>
           </div>
         </aside>

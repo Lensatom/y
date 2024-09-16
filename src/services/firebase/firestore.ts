@@ -9,6 +9,7 @@ export const addData = async (col:string, id:string, payload:any, morePath?:stri
     });
     const id = docRef.id
     await updateData(col, id, {id})
+    return docRef.id
   } else {
     await setDoc(doc(db, col, id, ...(morePath ? morePath : [])), {
       ...payload,

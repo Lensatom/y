@@ -1,29 +1,33 @@
-import { Container, Loader, Post } from "@/components/inc";
-import 'react-circular-progressbar/dist/styles.css';
-import { useEffect, useState } from "react";
-import { getCollection } from "@/services/firebase/firestore";
-import { where } from "firebase/firestore";
-import { IPost } from "@/interfaces";
-import { FaSearch } from "react-icons/fa";
 import { Input } from "@/components/base";
+import { Container, Loader, Post } from "@/components/inc";
+import { useFetch } from "@/hooks";
+import { IPost } from "@/interfaces";
+import { where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import 'react-circular-progressbar/dist/styles.css';
+import { FaSearch } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
 const Search = () => {
 
-  const [posts, setPosts] = useState<IPost[] | null>(null)
   const { search:query } = useLocation()
   const [search, setSearch] = useState(decodeURIComponent(query.split("=")[1]))
-
-  const getPosts = async () => {
-    const posts:any = await getCollection("posts", [where(search, "==", true)])
-    setPosts(posts)
-  }
+  const {data:posts, isLoading, refresh} = useFetch<IPost[]>({
+    path: ["posts"],
+    type: "collection",
+    conditions: [where(search, "==", true)]
+  })
 
   useEffect(() => {
-    getPosts()
-  }, [])
+    if (posts === undefined) return
+    refresh()
+  }, [search])
 
-if (posts == null) return <Loader />
+  useEffect(() => {
+    setSearch(decodeURIComponent(query.split("=")[1]))
+  }, [query])
+
+if (isLoading) return <Loader />
   return (
     <div className="min-h-screen w-full bg-background">
       <Container className="py-3">
@@ -39,7 +43,7 @@ if (posts == null) return <Loader />
         </div>
       </Container>
       <div>
-        {posts.map((post) => <Post search={search} {...post} />)}
+        {posts?.map((post) => <Post search={search} {...post} />)}
       </div>
     </div>
   )

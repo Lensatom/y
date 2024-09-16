@@ -22,6 +22,7 @@ export interface IPost {
   viewCount: number
   replyingTo: string | null
   createdAt?: any
+  reposterName?: string
 }
 
 export interface ITrend {
