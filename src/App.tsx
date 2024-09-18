@@ -1,41 +1,77 @@
-import { Route, Routes, useLocation } from "react-router-dom"
-import { Home } from "./pages/home"
-import { Sidebar } from "./components/inc"
-import { Trending } from "./pages/trending"
-import { Messages } from "./pages/messages"
-import { Profile } from "./pages/profile"
+import { onAuthStateChanged } from "firebase/auth"
+import { useEffect, useState } from "react"
 import { FaSearch } from "react-icons/fa"
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { Input, Text } from "./components/base"
-import { Trend } from "./pages/trending/components"
-import { Posts } from "./pages/posts"
+import { Loader, Sidebar } from "./components/inc"
 import { Welcome } from "./pages/auth"
+import { Home } from "./pages/home"
+import { Messages } from "./pages/messages"
+import { Posts } from "./pages/home"
+import { Profile } from "./pages/profile"
+import { Search, Trending } from "./pages/trending"
+import { Trend } from "./pages/trending/components"
+import { auth } from "./services/firebase"
+import { getData } from "./services/firebase/firestore"
+import { useUserStore } from "./store"
+import { ITrend } from "./interfaces"
+import { useFetch } from "./hooks"
+import EditProfile from "./pages/profile/editProfile"
+import { getImageURL } from "./helpers"
 
 function App() {
 
+  const navigate = useNavigate()
   const { pathname } = useLocation()
+  
+  const { isLoggedIn, login } = useUserStore((state) => state)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const trends = [
-    {
-      trend: "#hello y",
-      postCount: 200
-    },
-    {
-      trend: "#weldone",
-      postCount: 500
-    },
-  ]
+  const unauthRoutes = ["/"]
 
+  const { data:trends } = useFetch<ITrend[]>({
+    path: ["trends"],
+    type: "collection"
+  })
+
+  useEffect(() => {
+    if (isLoggedIn && unauthRoutes.includes(pathname)) {
+      navigate("/home")
+    } else {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const uid = user.uid;
+          const userData:any = await getData("users", uid)
+          const photoURL = await getImageURL(userData.photoURL)
+          const coverPhotoURL = await getImageURL(userData.coverPhotoURL)
+          login({...userData, handle: "@lensatom", photoURL, coverPhotoURL})
+        }
+        setIsLoading(false)
+      });
+    }
+  }, [isLoggedIn])
+
+  useEffect(() => {
+    if (isLoading || isLoggedIn) return
+    navigate("/")
+  }, [isLoading])
+
+  if (isLoading) return <Loader />
   return (
     <div className="relative px-24 flex flex-row">
       {pathname !== "/" && <Sidebar />}
       <main className="mx-16 w-full flex gap-8">
-        <section className="w-3/5 border-x-0.5">
+        <section className="w-3/5 min-h-screen h-fit border-x-0.5">
           <Routes>
             <Route path="" element={<Welcome />} />
             <Route path="/home" element={<Home />} />
             <Route path="/explore" element={<Trending />} />
             <Route path="/messages" element={<Messages />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/user">
+              <Route path="me" element={<Profile />} />
+              <Route path="edit" element={<EditProfile />} />
+            </Route>
+            <Route path="/search" element={<Search />} />
             <Route path="/status">
               <Route path=":id" element={<Posts />} />
             </Route>
@@ -49,7 +85,7 @@ function App() {
           <div className="px-6 py-4 border-0.5 rounded-lg">
             <Text size="xl" bold>Trends for you</Text>
             <div className="flex flex-col gap-3 mt-4">
-              {trends.map((trend) => <Trend {...trend} />)}
+              {trends?.map((trend) => <Trend {...trend} />)}
             </div>
           </div>
         </aside>
