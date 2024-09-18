@@ -14,13 +14,15 @@ import { BsImage } from "react-icons/bs";
 interface Props {
   variant?: "post" | "reply",
   replyingTo?: string
+  replyingToHandle?: string
 }
 
 const NewPost = (props:Props) => {
 
   const {
     variant,
-    replyingTo
+    replyingTo,
+    replyingToHandle
   } = props
 
   const { photoURL, name, handle, id:userId } = useUserStore((state) => state)
@@ -37,7 +39,8 @@ const NewPost = (props:Props) => {
     replyCount: 0,
     repostCount: 0,
     viewCount: 0,
-    replyingTo: replyingTo ? replyingTo : null
+    replyingTo: replyingTo ? replyingTo : null,
+    replyingToHandle: replyingToHandle ? replyingToHandle : null,
   }
   const [newPostContent, setNewPostContent] = useState("")
 

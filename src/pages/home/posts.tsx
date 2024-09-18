@@ -108,7 +108,7 @@ const Posts = () => {
         </Text>
 
         {/* reply field */}
-        <NewPost variant="reply" replyingTo={postData?.id ?? ""} />
+        <NewPost variant="reply" replyingToHandle={postData?.handle ?? ""} replyingTo={postData?.id ?? ""} />
       </Container>
 
       {/* Replies under post */}

@@ -30,6 +30,7 @@ const Post = (props:Props) => {
     viewCount,
     createdAt,
     reposterName,
+    replyingToHandle,
     // component props
     search,
     thread,
@@ -112,6 +113,14 @@ const Post = (props:Props) => {
           <Text variant="link" bold>{posterData?.name}</Text>
           <Text size="sm" variant="secondary">{handle}</Text>
         </Link>
+        {replyingToHandle && (
+          <Link to={`/user/${replyingToHandle}`}>
+            <Text variant="secondary" size="sm" className="pl-16">
+              Replying to
+              <span className="text-primary hover:underline"> {replyingToHandle}</span>
+            </Text>
+          </Link>
+        )}
         <Link to={`/status/${id}`} className="flex flex-col w-full pl-10">
           <div className={`${thread ? "border-l-0.5" : ""} w-full flex pl-6 pb-2`}>
             {search ? (

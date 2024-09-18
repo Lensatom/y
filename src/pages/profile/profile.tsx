@@ -19,6 +19,12 @@ const Profile = () => {
     conditions: [where("userId", "==", userData.id)]
   })
 
+  const { data:replies } = useFetch<IPost[]>({
+    path: ["posts"],
+    type: "collection",
+    conditions: [where("replyingTo", "!=", null)]
+  })
+
   const { data:reposts } = useFetch<IPost[]>({
     path: ["posts"],
     type: "collection",
@@ -32,6 +38,7 @@ const Profile = () => {
 
   const tabs = {
     posts: <Posts posts={posts} />,
+    replies: <Posts posts={replies} />,
     reposts: <Posts posts={reposts} />,
     bookmarks: <Posts posts={bookmarks} />
   }

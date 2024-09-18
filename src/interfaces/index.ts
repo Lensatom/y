@@ -21,6 +21,7 @@ export interface IPost {
   repostCount: number
   viewCount: number
   replyingTo: string | null
+  replyingToHandle: string | null
   image0: string
   image1: string
   image2: string
