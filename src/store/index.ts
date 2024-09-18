@@ -10,7 +10,7 @@ const defaultUserState = {
   isLoggedIn: false,
   createdAt: null,
   bio: null,
-  coberPhotoURL: null
+  coverPhotoURL: null
 }
 
 export const useUserStore = create<UserState>((set) => ({

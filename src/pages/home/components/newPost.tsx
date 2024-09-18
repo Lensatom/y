@@ -82,7 +82,7 @@ const NewPost = (props:Props) => {
       <div className=" w-full flex gap-3">
         <Avatar>
           <AvatarImage src={photoURL ?? ""} />
-          <AvatarFallback string={userId ?? ""}>{name && name[0]}</AvatarFallback>
+          <AvatarFallback string={userId ?? ""}>{name ? name[0] : ""}</AvatarFallback>
         </Avatar>
         <div className="w-full flex flex-col items-end">
           <TextArea
@@ -110,7 +110,7 @@ const NewPost = (props:Props) => {
       <div className=" w-full flex gap-3">
         <Avatar>
           <AvatarImage src={photoURL ?? ""} />
-          <AvatarFallback string={userId ?? ""}>{name && name[0]}</AvatarFallback>
+          <AvatarFallback string={userId ?? ""}>{name ? name[0] : ""}</AvatarFallback>
         </Avatar>
         <div className="w-full border-b-0.5">
           <TextArea

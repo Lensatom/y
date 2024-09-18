@@ -55,7 +55,7 @@ const Profile = () => {
         <div className="w-full flex justify-between items-end -mt-20">
           <Avatar className="w-40 h-40 border-4 border-background">
             <AvatarImage src={userData.photoURL ?? undefined} />
-            <AvatarFallback string={userData.id ?? ""}>{userData.name && userData.name[0]}</AvatarFallback>
+            <AvatarFallback string={userData.id ?? ""}>{userData.name ? userData.name[0] : ""}</AvatarFallback>
           </Avatar>
           <div className="mb-5">
             <Link to="/user/edit">

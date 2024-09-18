@@ -5,7 +5,7 @@ export interface IUserData {
   handle: string | null;
   photoURL: string | null;
   bio: string | null;
-  coverPhotoURL: string;
+  coverPhotoURL: string | null;
   createdAt?: any
 }
 

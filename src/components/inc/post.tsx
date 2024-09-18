@@ -65,7 +65,7 @@ const Post = (props:Props) => {
         <div className="flex items-center gap-2">
           <Avatar>
             <AvatarImage src={posterData.photoURL ?? ""} />
-            <AvatarFallback string={id}>{posterData?.name && posterData?.name[0]}</AvatarFallback>
+            <AvatarFallback string={id}>{posterData?.name ? posterData?.name[0] : ""}</AvatarFallback>
           </Avatar>
           <Link to="" className="flex flex-col items-start">
             <Text variant="link" bold>{posterData?.name}</Text>

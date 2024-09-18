@@ -31,9 +31,13 @@ const AvatarImage = React.forwardRef<
 ))
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
+interface AvatarFallback extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> {
+  string?: string
+}
+
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+  AvatarFallback
 >(({ className, string, ...props }, ref) => {
   
   const color = stringToColour(string ?? "")
