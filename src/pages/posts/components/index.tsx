@@ -1,1 +1,1 @@
-export { default as NewReply } from "./newReply"
+export { default as NewReply } from "../../home/components/newReply"

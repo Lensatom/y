@@ -6,7 +6,7 @@ import { useUserStore } from "@/store";
 import { increment, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { NewReply } from "./components";
+import { NewPost } from "./components";
 
 const Posts = () => {
   
@@ -108,7 +108,7 @@ const Posts = () => {
         </Text>
 
         {/* reply field */}
-        <NewReply replyingTo={postData?.id ?? "x"} />
+        <NewPost variant="reply" replyingTo={postData?.id ?? ""} />
       </Container>
 
       {/* Replies under post */}

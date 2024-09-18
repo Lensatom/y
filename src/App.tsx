@@ -16,6 +16,8 @@ import { getData } from "./services/firebase/firestore"
 import { useUserStore } from "./store"
 import { ITrend } from "./interfaces"
 import { useFetch } from "./hooks"
+import EditProfile from "./pages/profile/editProfile"
+import { getImageURL } from "./helpers"
 
 function App() {
 
@@ -40,7 +42,9 @@ function App() {
         if (user) {
           const uid = user.uid;
           const userData:any = await getData("users", uid)
-          login({...userData, handle: "@lensatom"})
+          const photoURL = await getImageURL(userData.photoURL)
+          const coverPhotoURL = await getImageURL(userData.coverPhotoURL)
+          login({...userData, handle: "@lensatom", photoURL, coverPhotoURL})
         }
         setIsLoading(false)
       });
@@ -57,13 +61,16 @@ function App() {
     <div className="relative px-24 flex flex-row">
       {pathname !== "/" && <Sidebar />}
       <main className="mx-16 w-full flex gap-8">
-        <section className="w-3/5 border-x-0.5">
+        <section className="w-3/5 min-h-screen h-fit border-x-0.5">
           <Routes>
             <Route path="" element={<Welcome />} />
             <Route path="/home" element={<Home />} />
             <Route path="/explore" element={<Trending />} />
             <Route path="/messages" element={<Messages />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/user">
+              <Route path="me" element={<Profile />} />
+              <Route path="edit" element={<EditProfile />} />
+            </Route>
             <Route path="/search" element={<Search />} />
             <Route path="/status">
               <Route path=":id" element={<Posts />} />

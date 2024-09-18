@@ -13,7 +13,7 @@ const Home = () => {
     <div className="min-h-screen w-full bg-background">
       <NewPost />
       <div>
-        {posts.map((post:IPost) => <Post {...post} />)}
+        {posts.map((post:IPost, index:number) => <Post key={index} {...post} />)}
       </div>
     </div>
   )

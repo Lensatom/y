@@ -44,7 +44,7 @@ const NewReply = (props:Props) => {
     const id = await addData("posts", "auto", newPostData)
     await updateData("posts", replyingTo, {replyCount: increment(1)})
 
-    const hashtags = getHashtags(newReplyContent, )
+    const hashtags = getHashtags(newReplyContent)
     await postHashtags(hashtags, id)
     
     setNewReplyContent("")

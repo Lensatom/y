@@ -1,9 +1,10 @@
-import { getDate, getHashtags, getTime, postHashtags } from "@/helpers";
+import { getDate, getHashtags, getImageURL, getTime, postHashtags } from "@/helpers";
 import { useFetch } from "@/hooks";
-import { IPost } from "@/interfaces";
+import { IPost, IUserData } from "@/interfaces";
 import { addData, deleteData, updateData } from "@/services/firebase/firestore";
 import { useUserStore } from "@/store";
 import { increment, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { BiRepost } from "react-icons/bi";
 import { BsChat, BsHeart, BsHeartFill } from "react-icons/bs";
 import { IoIosStats } from "react-icons/io";
@@ -23,8 +24,7 @@ const Post = (props:Props) => {
 
   const {
     id,
-    photoURL,
-    name,
+    userId,
     handle,
     content:c,
     viewCount,
@@ -38,23 +38,43 @@ const Post = (props:Props) => {
 
   const content = search ? c.split(search) : c
 
+  const {data:posterData, isLoading, updateData} = useFetch<IUserData>({
+    path: ["users", userId],
+    type: "data"
+  })
+
+  const getProfilePhoto = async () => {
+    const photoURL = await getImageURL(posterData?.photoURL ?? "")
+    updateData({photoURL})
+    return
+  }
+
+  useEffect(() => {
+    if (isLoading) return
+    getProfilePhoto()
+  }, [isLoading])
+
+  if (isLoading) return <div className="h-24 border-b-0.5" />
+  if (!posterData) return
+
   if (ownsPage) {
     return (
       <div id={id} className="w-full pt-1 pb-4 flex flex-col items-start gap-3">
         {/* Poster's avatar */}
         <div className="flex items-center gap-2">
           <Avatar>
-            {photoURL && <AvatarImage src={photoURL} />}
-            <AvatarFallback>{name[0]}</AvatarFallback>
+            <AvatarImage src={posterData.photoURL ?? ""} />
+            <AvatarFallback string={id}>{posterData?.name && posterData?.name[0]}</AvatarFallback>
           </Avatar>
           <Link to="" className="flex flex-col items-start">
-            <Text variant="link" bold>{name}</Text>
+            <Text variant="link" bold>{posterData?.name}</Text>
             <Text size="sm" variant="secondary">{handle}</Text>
           </Link>
         </div>
 
         {/* Post content */}
         <Text className="text-white">{content}</Text>
+        <ImagePanel {...props} />
 
         {/* Date, time and view count */}
         <Text size="sm" variant="secondary">
@@ -74,7 +94,7 @@ const Post = (props:Props) => {
   }
 
   return (
-    <Container className={`${thread ? "pt-1" : "border-b-0.5 pt-4"} relative !pl-0`}>
+    <Container id={id} className={`${thread ? "pt-1" : "border-b-0.5 pt-4"} relative !pl-0`}>
       {reposterName && (
         <Link to="/user/">
           <Text size="sm" className="text-gray-400 flex items-center pb-2 gap-1 px-10 hover:underline">
@@ -84,16 +104,16 @@ const Post = (props:Props) => {
       )}
       {/* TODO: Add reposter... */}
       <Avatar className="absolute left-5">
-        <AvatarImage src={photoURL} />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarImage src={posterData.photoURL ?? ""} />
+        <AvatarFallback string={id}>{posterData?.name && posterData?.name[0]}</AvatarFallback>
       </Avatar>
       <div>
         <Link to="" className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 flex items-center gap-1 pb-1`}>
-          <Text variant="link" bold>{name}</Text>
+          <Text variant="link" bold>{posterData?.name}</Text>
           <Text size="sm" variant="secondary">{handle}</Text>
         </Link>
-        <Link to={`/status/${id}`} className="flex w-full pl-10">
-          <div className={`${thread ? "border-l-0.5" : ""} w-full flex pl-6 pb-1`}>
+        <Link to={`/status/${id}`} className="flex flex-col w-full pl-10">
+          <div className={`${thread ? "border-l-0.5" : ""} w-full flex pl-6 pb-2`}>
             {search ? (
               <Text className="w-full gap-1">
                 {content[0]}
@@ -104,6 +124,9 @@ const Post = (props:Props) => {
               <Text>{content}</Text>
             )}
           </div>
+          <div className={`${thread ? "border-l-0.5" : ""} w-full flex pl-6 pb-1`}>
+            <ImagePanel {...props} />
+          </div>
         </Link>
         <div className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 pr-10`}>
           <div className="w-full flex justify-between items-center pb-2">
@@ -112,6 +135,91 @@ const Post = (props:Props) => {
         </div>
       </div>
     </Container>
+  )
+}
+
+const ImagePanel = (props:Props) => {
+
+  const {
+    image0,
+    image1,
+    image2,
+    image3
+  } = props;
+
+  const [images, setImages] = useState<string[]>([])
+
+  const getImages = async () => {
+    const images = []
+    if (image0) {
+      const image0URL = await getImageURL(image0)
+      images.push(image0URL)
+    }
+    if (image1) {
+      const image0URL = await getImageURL(image1)
+      images.push(image0URL)
+    }
+    if (image2) {
+      const image0URL = await getImageURL(image2)
+      images.push(image0URL)
+    }
+    if (image3) {
+      const image0URL = await getImageURL(image3)
+      images.push(image0URL)
+    }
+    setImages(images)
+  }
+
+  useEffect(() => {
+    if (!image0) return
+    getImages()
+  }, [])
+
+  if (!image0) return null
+
+  return (
+    <div className="flex w-full h-80 mb-5 gap-1">
+      <div className="w-full h-full flex flex-col gap-1">
+        {images[0] && (
+          <div
+            className="w-full h-full overflow-hidden"
+            style={{
+              backgroundImage: `url(${images[0]})`,
+              backgroundSize: "cover"
+            }}
+          />
+        )}
+        {images[2] && (
+          <div
+          className="w-full h-full overflow-hidden"
+          style={{
+            backgroundImage: `url(${images[2]})`,
+            backgroundSize: "cover"
+          }}
+        />
+        )}
+      </div>
+      <div className="w-full h-full flex flex-col gap-1">
+        {images[1] && (
+          <div
+            className="w-full h-full overflow-hidden"
+            style={{
+              backgroundImage: `url(${images[1]})`,
+              backgroundSize: "cover"
+            }}
+          />
+        )}
+        {images[3] && (
+          <div
+            className="w-full h-full overflow-hidden"
+            style={{
+              backgroundImage: `url(${images[3]})`,
+              backgroundSize: "cover"
+            }}
+          />
+        )}
+      </div>
+    </div>
   )
 }
 

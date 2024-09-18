@@ -1,5 +1,7 @@
+import { storage } from "@/services/firebase"
 import { addData, dataExists, updateData } from "@/services/firebase/firestore"
 import { increment } from "firebase/firestore"
+import { getDownloadURL, ref } from "firebase/storage"
 
 export const getHashtags = (post:string) => {
   const words = post.split(" ")
@@ -30,9 +32,8 @@ export const postHashtags:any = async (hashtags:string[], id:string, initialInde
     }
     addData("trends", hashtag, payload)
   }
-  
-  hashtags.shift()
-  return postHashtags(hashtags, initialIndex + 1)
+
+  return postHashtags(hashtags, id, initialIndex + 1)
 }
 
 export const getDate = (timestamp:any) => {
@@ -44,4 +45,22 @@ export const getDate = (timestamp:any) => {
 
 export const getTime = (timestamp:any) => {
   return timestamp.toDate().toLocaleTimeString()
+}
+
+export const getImageURL = async (id:string) => {
+  const url = await getDownloadURL(ref(storage, id))
+  return url
+}
+
+export const stringToColour = (str: string) => {
+  let hash = 0;
+  str.split('').forEach(char => {
+    hash = char.charCodeAt(0) + ((hash << 5) - hash)
+  })
+  let colour = '#'
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff
+    colour += value.toString(16).padStart(2, '0')
+  }
+  return colour
 }

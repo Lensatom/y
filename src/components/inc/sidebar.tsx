@@ -1,4 +1,4 @@
-import { AiFillHome, AiFillMessage, AiOutlineSearch, AiOutlineUser } from "react-icons/ai"
+import { AiFillHome, AiOutlineSearch, AiOutlineUser } from "react-icons/ai"
 import { NavLink, useLocation } from "react-router-dom"
 
 const Sidebar = () => {
@@ -15,13 +15,13 @@ const Sidebar = () => {
       icon: AiOutlineSearch,
       route: "/explore",
     },
-    {
-      icon: AiFillMessage,
-      route: "/messages",
-    },
+    // {
+    //   icon: AiFillMessage,
+    //   route: "/messages",
+    // },
     {
       icon: AiOutlineUser,
-      route: "/profile",
+      route: "/user/me",
     }
   ]
 

@@ -21,6 +21,10 @@ export interface IPost {
   repostCount: number
   viewCount: number
   replyingTo: string | null
+  image0: string
+  image1: string
+  image2: string
+  image3: string
   createdAt?: any
   reposterName?: string
 }
