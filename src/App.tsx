@@ -6,7 +6,7 @@ import { Input, Text } from "./components/base"
 import { Loader, Sidebar } from "./components/inc"
 import { useFetch } from "./hooks"
 import { ITrend } from "./interfaces"
-import { Welcome } from "./pages/auth"
+import { ChooseHandle, Welcome } from "./pages/auth"
 import { Home, Posts } from "./pages/home"
 import { Messages } from "./pages/messages"
 import { Profile } from "./pages/profile"
@@ -22,7 +22,7 @@ function App() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   
-  const { isLoggedIn, login } = useUserStore((state) => state)
+  const { isLoggedIn, handle, login } = useUserStore((state) => state)
   const [isLoading, setIsLoading] = useState(true)
 
   const unauthRoutes = ["/"]
@@ -33,6 +33,10 @@ function App() {
   })
 
   useEffect(() => {
+    if (isLoggedIn && !handle) {
+      navigate("/chooseHandle")
+      return
+    }
     if (isLoggedIn && unauthRoutes.includes(pathname)) {
       navigate("/home")
     } else {
@@ -41,10 +45,7 @@ function App() {
           const uid = user.uid;
           const userData:any = await getData("users", uid)
 
-          login({
-            ...userData,
-            handle: "@lensatom",
-          })
+          login(userData)
         }
         setIsLoading(false)
       });
@@ -64,12 +65,16 @@ function App() {
         <section className="w-3/5 min-h-screen h-fit border-x-0.5">
           <Routes>
             <Route path="" element={<Welcome />} />
+            {/* {!handle &&  */}
+            <Route path="/chooseHandle" element={<ChooseHandle />} />
+            {/* } */}
             <Route path="/home" element={<Home />} />
             <Route path="/explore" element={<Trending />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/user">
               <Route path="me" element={<Profile />} />
               <Route path="edit" element={<EditProfile />} />
+              <Route path=":id" element={<Profile />} />
             </Route>
             <Route path="/search" element={<Search />} />
             <Route path="/status">
