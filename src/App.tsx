@@ -4,20 +4,18 @@ import { FaSearch } from "react-icons/fa"
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import { Input, Text } from "./components/base"
 import { Loader, Sidebar } from "./components/inc"
+import { useFetch } from "./hooks"
+import { ITrend } from "./interfaces"
 import { Welcome } from "./pages/auth"
-import { Home } from "./pages/home"
+import { Home, Posts } from "./pages/home"
 import { Messages } from "./pages/messages"
-import { Posts } from "./pages/home"
 import { Profile } from "./pages/profile"
+import EditProfile from "./pages/profile/editProfile"
 import { Search, Trending } from "./pages/trending"
 import { Trend } from "./pages/trending/components"
 import { auth } from "./services/firebase"
 import { getData } from "./services/firebase/firestore"
 import { useUserStore } from "./store"
-import { ITrend } from "./interfaces"
-import { useFetch } from "./hooks"
-import EditProfile from "./pages/profile/editProfile"
-import { getImageURL } from "./helpers"
 
 function App() {
 
@@ -42,9 +40,11 @@ function App() {
         if (user) {
           const uid = user.uid;
           const userData:any = await getData("users", uid)
-          const photoURL = await getImageURL(userData.photoURL)
-          const coverPhotoURL = await getImageURL(userData.coverPhotoURL)
-          login({...userData, handle: "@lensatom", photoURL, coverPhotoURL})
+
+          login({
+            ...userData,
+            handle: "@lensatom",
+          })
         }
         setIsLoading(false)
       });

@@ -39,21 +39,10 @@ const Post = (props:Props) => {
 
   const content = search ? c.split(search) : c
 
-  const {data:posterData, isLoading, updateData} = useFetch<IUserData>({
+  const {data:posterData, isLoading} = useFetch<IUserData>({
     path: ["users", userId],
     type: "data"
   })
-
-  const getProfilePhoto = async () => {
-    const photoURL = await getImageURL(posterData?.photoURL ?? "")
-    updateData({photoURL})
-    return
-  }
-
-  useEffect(() => {
-    if (isLoading) return
-    getProfilePhoto()
-  }, [isLoading])
 
   if (isLoading) return <div className="h-24 border-b-0.5" />
   if (!posterData) return

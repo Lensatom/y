@@ -32,13 +32,13 @@ const EditProfile = () => {
 
     if (profilePhoto) {
       const id = `${userData.id}photo`
-      await uploadFile(profilePhoto[0], id ?? "")
-      await updateData("users", userData.id ?? "", {photoURL: id})
+      const url = await uploadFile(profilePhoto[0], id ?? "")
+      await updateData("users", userData.id ?? "", {photoURL: url})
     }
     if (coverPhoto) {
       const id = `${userData.id}cover`
-      await uploadFile(coverPhoto[0], id ?? "")
-      await updateData("users", userData.id ?? "", {coverPhotoURL: id})
+      const url = await uploadFile(coverPhoto[0], id ?? "")
+      await updateData("users", userData.id ?? "", {coverPhotoURL: url})
     }
 
     navigate("/user/me")
