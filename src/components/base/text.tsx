@@ -10,6 +10,7 @@ const textVariants = cva(
         destructive: "text-destructive",
         secondary: " text-gray-500",
         link: "hover:underline cursor-pointer",
+        error: "text-orange-800"
       },
       size: {
         default: "text-md",

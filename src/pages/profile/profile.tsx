@@ -3,48 +3,79 @@ import { Avatar, AvatarFallback, AvatarImage, Container, Loader, Post, Tab } fro
 import { DEFAULTCOVERPHOTO } from "@/constants/constants"
 import { getDate } from "@/helpers"
 import { useFetch } from "@/hooks"
-import { IPost } from "@/interfaces"
+import { IPost, IUserData } from "@/interfaces"
 import { useUserStore } from "@/store"
 import { where } from "firebase/firestore"
+import { useEffect, useState } from "react"
 import { FaCalendar } from "react-icons/fa"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 const Profile = () => {
 
-  const userData = useUserStore(state => state)
+  const currUserData = useUserStore(state => state)
+  const { pathname } = useLocation()
+  const user = pathname.split("/").at(-1)
+  const isMe = user === "me" || user === currUserData.handle
+  const [userData, setUserData] = useState<IUserData | null>(null)
+
+  const { data:profileData, isLoading } = useFetch<IUserData[]>({
+    path: ["users"],
+    type: "collection",
+    get: !isMe
+  })
+
+  useEffect(() => {
+    if (isMe) {
+      setUserData(currUserData)
+    }
+  })
+
+  useEffect(() => {
+    if (!profileData) return
+    if (profileData.length === 0) return
+    setUserData(profileData[0])
+  }, [profileData])
 
   const { data:posts } = useFetch<IPost[]>({
     path: ["posts"],
     type: "collection",
-    conditions: [where("userId", "==", userData.id)]
+    conditions: [where("userId", "==", userData?.id)],
+    dependencies: [userData]
   })
 
   const { data:replies } = useFetch<IPost[]>({
     path: ["posts"],
     type: "collection",
-    conditions: [where("replyingTo", "!=", null)]
+    conditions: [where("replyingTo", "!=", null)],
+    dependencies: [userData]
   })
 
   const { data:reposts } = useFetch<IPost[]>({
     path: ["posts"],
     type: "collection",
-    conditions: [where("reposterId", "==", userData.id)]
+    conditions: [where("reposterId", "==", userData?.id)],
+    dependencies: [userData]
   })
 
   const { data:bookmarks } = useFetch<IPost[]>({
-    path: ["users", userData.id ?? "", "bookmarked"],
+    path: ["users", userData?.id ?? "", "bookmarked"],
     type: "collection",
+    dependencies: [userData],
+    get: !isMe
   })
 
   const tabs = {
     posts: <Posts posts={posts} />,
     replies: <Posts posts={replies} />,
     reposts: <Posts posts={reposts} />,
-    bookmarks: <Posts posts={bookmarks} />
+    // Tabs for logged-in user profile
+    ...(isMe && {
+      bookmarks: <Posts posts={bookmarks} />
+    })
   }
 
-
-  if (!userData.name) return <>Error</>
+  if (isLoading) return <Loader />
+  if (!userData?.name) return <>Error</>
 
   return (
     <div className="w-full bg-background">
@@ -58,9 +89,13 @@ const Profile = () => {
             <AvatarFallback string={userData.id ?? ""}>{userData.name ? userData.name[0] : ""}</AvatarFallback>
           </Avatar>
           <div className="mb-5">
-            <Link to="/user/edit">
-              <Button size={"sm"} variant="outline" pill>Edit Profile</Button>
-            </Link>
+            {isMe ? (
+              <Link to="/user/edit">
+                <Button size={"sm"} variant="outline" pill>Edit Profile</Button>
+              </Link>
+            ) : (
+              <Button size={"sm"} variant="light" pill>Follow</Button>
+            )}
           </div>
         </div>
         <div>
