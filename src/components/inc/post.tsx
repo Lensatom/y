@@ -39,10 +39,21 @@ const Post = (props:Props) => {
 
   const content = search ? c.split(search) : c
 
-  const {data:posterData, isLoading} = useFetch<IUserData>({
+  const {data:posterData, isLoading, updateData} = useFetch<IUserData>({
     path: ["users", userId],
     type: "data"
   })
+
+  const getProfilePhoto = async () => {
+    const photoURL = await getImageURL(posterData?.photoURL ?? "")
+    updateData({photoURL})
+    return
+  }
+
+  useEffect(() => {
+    if (isLoading) return
+    getProfilePhoto()
+  }, [isLoading])
 
   if (isLoading) return <div className="h-24 border-b-0.5" />
   if (!posterData) return
@@ -51,7 +62,7 @@ const Post = (props:Props) => {
     return (
       <div id={id} className="w-full pt-1 pb-4 flex flex-col items-start gap-3">
         {/* Poster's avatar */}
-        <div className="flex items-center gap-2">
+        <Link to={`/user/${handle}`} className="flex items-center gap-2">
           <Avatar>
             <AvatarImage src={posterData.photoURL ?? ""} />
             <AvatarFallback string={id}>{posterData?.name ? posterData?.name[0] : ""}</AvatarFallback>
@@ -60,7 +71,7 @@ const Post = (props:Props) => {
             <Text variant="link" bold>{posterData?.name}</Text>
             <Text size="sm" variant="secondary">{handle}</Text>
           </Link>
-        </div>
+        </Link>
 
         {/* Post content */}
         <Text className="text-white">{content}</Text>
@@ -93,12 +104,14 @@ const Post = (props:Props) => {
         </Link>
       )}
       {/* TODO: Add reposter... */}
-      <Avatar className="absolute left-5">
-        <AvatarImage src={posterData.photoURL ?? ""} />
-        <AvatarFallback string={id}>{posterData?.name && posterData?.name[0]}</AvatarFallback>
-      </Avatar>
+      <Link to={`/user/${handle}`}>
+        <Avatar className="absolute left-5">
+          <AvatarImage src={posterData.photoURL ?? ""} />
+          <AvatarFallback string={id}>{posterData?.name && posterData?.name[0]}</AvatarFallback>
+        </Avatar>
+      </Link>
       <div>
-        <Link to="" className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 flex items-center gap-1 pb-1`}>
+        <Link to={`/user/${handle}`} className={`${thread ? "border-l-0.5" : ""} w-full ml-10 pl-6 flex items-center gap-1 pb-1`}>
           <Text variant="link" bold>{posterData?.name}</Text>
           <Text size="sm" variant="secondary">{handle}</Text>
         </Link>

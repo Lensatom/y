@@ -5,6 +5,8 @@ interface Params {
   path: string[]
   type?: "data" | "collection" | "exists"
   conditions?: any[]
+  dependencies?: any[]
+  get?: boolean
 }
 
 export function useFetch <T>(params:Params) {
@@ -13,7 +15,10 @@ export function useFetch <T>(params:Params) {
     path,
     type,
     conditions,
+    dependencies,
+    get:g
   } = params
+  const get = g ? g : true
 
   const [data, setData] = useState<T>()
   const [isLoading, setIsLoading] = useState(true)
@@ -63,8 +68,9 @@ export function useFetch <T>(params:Params) {
   }
 
   useEffect(() => {
+    if (!get) return
     handleFetch()
-  }, [])
+  }, [get, ...(dependencies ?? [])])
 
   return {data, isLoading, refresh:handleRefresh, setData, updateData}
 }
